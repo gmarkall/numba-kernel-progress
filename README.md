@@ -27,6 +27,35 @@ python kernel_progress.py
 * ... Maybe other things I forgot to mention.
 
 
+## How does it work?
+
+A managed array visible to both the host and device holds an integer
+representing current progress:
+
+```python
+progress = cuda.managed_array(1, dtype=np.uint64)
+```
+
+The running kernel increments this in a loop (with some sleeping, so it doesn't
+run too fast):
+
+```python
+for i in range(MAX_VAL):
+    cuda.atomic.inc(progress, 0, MAX_VAL)
+    cuda.nanosleep(KERNEL_SLEEP)
+```
+
+Simultaneously, the host reads the progress value and updates the progress bar
+in a loop:
+
+```python
+while val < MAX_VAL:
+    sleep(0.001)
+    val = progress[0]
+    bar.goto(val)
+```
+
+
 ## Will this work?
 
 Maybe...
