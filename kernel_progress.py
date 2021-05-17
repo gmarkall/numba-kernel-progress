@@ -42,12 +42,10 @@ report_progress[1, 1](progress)
 bar = Bar('Kernel', max=MAX_VAL)
 
 val = 0
-count = 0
 
 while val < MAX_VAL:
     sleep(0.001)
     val = progress[0]
     bar.goto(val)
-    count += 1
 
 print()
